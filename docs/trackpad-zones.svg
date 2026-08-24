@@ -28,8 +28,8 @@
   <text x="392" y="86" text-anchor="middle" font-size="15" fill="#58a6ff">按住拖动 = 移动窗口</text>
 
   <!-- 区外标签 -->
-  <text x="72" y="46" text-anchor="middle" font-size="15" fill="#f85149">松开 = 关闭</text>
-  <text x="177" y="24" text-anchor="middle" font-size="15" fill="#f0883e">松开 = 最小化</text>
+  <text x="72" y="46" text-anchor="middle" font-size="15" fill="#f85149">按下 = 关闭</text>
+  <text x="177" y="24" text-anchor="middle" font-size="15" fill="#f0883e">按下 = 最小化</text>
   <line x1="164" y1="30" x2="152" y2="56" stroke="#f0883e" stroke-width="1"/>
   <text x="632" y="46" text-anchor="middle" font-size="15" fill="#3fb950">拖动 = 调整大小</text>
   <text x="700" y="285" font-size="15" fill="#bc8cff">单指滑入 = 放大指针</text>
