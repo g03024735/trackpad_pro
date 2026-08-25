@@ -1,5 +1,7 @@
 # trackpad_pro
 
+中文 | [English](README.en.md)
+
 把触摸板变成窗口遥控器：在触摸板的不同分区按下/拖动，直接关闭、最小化、移动、缩放**指针下方**的窗口——不用先点聚焦，不用找红绿灯按钮。macOS 13+，开源免费（MIT）。
 
 ![触摸板功能分区](docs/trackpad-zones.svg)

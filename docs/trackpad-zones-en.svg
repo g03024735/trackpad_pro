@@ -1,0 +1,41 @@
+<svg viewBox="0 0 880 500" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, 'Segoe UI', Helvetica, sans-serif">
+  <defs>
+    <clipPath id="pad">
+      <rect x="40" y="60" width="640" height="400" rx="28"/>
+    </clipPath>
+  </defs>
+
+  <!-- Trackpad outline -->
+  <rect x="40" y="60" width="640" height="400" rx="28" fill="#88888812" stroke="#8b949e" stroke-width="1.5"/>
+
+  <!-- Zones -->
+  <g clip-path="url(#pad)">
+    <!-- Close: top-left corner -->
+    <rect x="40" y="60" width="64" height="40" fill="#f85149" fill-opacity="0.28" stroke="#f85149" stroke-width="1.5"/>
+    <!-- Minimize: next to close -->
+    <rect x="104" y="60" width="96" height="40" fill="#f0883e" fill-opacity="0.28" stroke="#f0883e" stroke-width="1.5"/>
+    <!-- Move window: top edge -->
+    <rect x="200" y="60" width="384" height="40" fill="#58a6ff" fill-opacity="0.22" stroke="#58a6ff" stroke-width="1.5"/>
+    <!-- Resize: top-right corner -->
+    <rect x="584" y="60" width="96" height="40" fill="#3fb950" fill-opacity="0.28" stroke="#3fb950" stroke-width="1.5"/>
+    <!-- Cursor zoom: right edge -->
+    <rect x="642" y="100" width="38" height="360" fill="#bc8cff" fill-opacity="0.22" stroke="#bc8cff" stroke-width="1.5"/>
+  </g>
+
+  <!-- In-zone symbols (traffic-light mapping) -->
+  <text x="72" y="87" text-anchor="middle" font-size="18" font-weight="600" fill="#f85149">×</text>
+  <text x="152" y="86" text-anchor="middle" font-size="18" font-weight="700" fill="#f0883e">–</text>
+  <text x="392" y="86" text-anchor="middle" font-size="15" fill="#58a6ff">Hold &amp; drag = move window</text>
+
+  <!-- Labels -->
+  <text x="72" y="46" text-anchor="middle" font-size="15" fill="#f85149">Press = close</text>
+  <text x="192" y="24" text-anchor="middle" font-size="15" fill="#f0883e">Press = minimize</text>
+  <line x1="170" y1="30" x2="152" y2="56" stroke="#f0883e" stroke-width="1"/>
+  <text x="632" y="46" text-anchor="middle" font-size="15" fill="#3fb950">Drag = resize</text>
+  <text x="700" y="285" font-size="15" fill="#bc8cff">Swipe in = zoom cursor</text>
+  <line x1="696" y1="280" x2="668" y2="280" stroke="#bc8cff" stroke-width="1"/>
+
+  <!-- Captions -->
+  <text x="340" y="295" text-anchor="middle" font-size="14" fill="#8b949e">Gestures act on the window under the cursor</text>
+  <text x="340" y="318" text-anchor="middle" font-size="13" fill="#8b949e">Everywhere else the trackpad works as normal</text>
+</svg>
