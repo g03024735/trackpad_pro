@@ -16,11 +16,11 @@ enum Zone: CaseIterable, Hashable {
 
     var name: String {
         switch self {
-        case .close: return "关闭"
-        case .minimize: return "最小化"
-        case .move: return "移动"
-        case .resize: return "调整大小"
-        case .zoom: return "放大指针"
+        case .close: return tr("关闭", "Close")
+        case .minimize: return tr("最小化", "Minimize")
+        case .move: return tr("移动", "Move")
+        case .resize: return tr("调整大小", "Resize")
+        case .zoom: return tr("放大指针", "Zoom cursor")
         }
     }
 

@@ -18,7 +18,7 @@ Gestures act on the **window under the mouse cursor** (it does not need to be fr
 When there is no regular window under the cursor (desktop, menu bar, Dock, …), gestures don't trigger and events pass through untouched — exactly as if the tool weren't installed.
 To target the focused window instead, set `Config.targetUnderCursor` to `false`.
 
-> **Note:** the app's UI (menus, settings, tutorial) is currently Chinese-only. English localization is planned — open an issue if you want it sooner.
+The UI (menus, settings, tutorial, overlays) follows your system language: English everywhere, Chinese on Chinese-language systems.
 
 ## Install
 

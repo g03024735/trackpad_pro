@@ -10,11 +10,12 @@ struct PermissionView: View {
             PrivacyIconTile()
                 .padding(.top, 38)
 
-            Text("开启辅助功能权限")
+            Text(tr("开启辅助功能权限", "Enable Accessibility Permission"))
                 .font(.system(size: 20, weight: .bold))
                 .padding(.top, 18)
 
-            Text("用于读取窗口的位置与大小，并执行移动、缩放、最小化和关闭")
+            Text(tr("用于读取窗口的位置与大小，并执行移动、缩放、最小化和关闭",
+                    "Needed to read window positions and to move, resize, minimize and close windows"))
                 .font(.system(size: 13))
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
@@ -28,14 +29,14 @@ struct PermissionView: View {
             Button {
                 NSWorkspace.shared.open(URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility")!)
             } label: {
-                Text("打开系统设置")
+                Text(tr("打开系统设置", "Open System Settings"))
             }
             .buttonStyle(ProminentCTAStyle())
             .keyboardShortcut(.defaultAction)
             .padding(.horizontal, 46)
             .padding(.top, 34)
 
-            Button("退出") { exit(0) }
+            Button(tr("退出", "Quit")) { exit(0) }
                 .buttonStyle(.plain)
                 .font(.system(size: 12))
                 .foregroundStyle(.tertiary)

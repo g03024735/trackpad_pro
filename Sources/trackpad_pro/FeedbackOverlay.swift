@@ -21,10 +21,10 @@ final class FeedbackOverlay {
 
         var text: String {
             switch self {
-            case .close: return "松开关闭窗口 · 移动手指取消"
-            case .minimize: return "松开最小化窗口 · 移动手指取消"
-            case .drag: return "正在拖动窗口"
-            case .resize: return "正在调整窗口大小"
+            case .close: return tr("松开关闭窗口 · 移动手指取消", "Release to close · move finger to cancel")
+            case .minimize: return tr("松开最小化窗口 · 移动手指取消", "Release to minimize · move finger to cancel")
+            case .drag: return tr("正在拖动窗口", "Moving window")
+            case .resize: return tr("正在调整窗口大小", "Resizing window")
             }
         }
     }

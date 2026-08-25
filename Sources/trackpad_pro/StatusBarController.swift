@@ -18,11 +18,11 @@ final class StatusBarController: NSObject {
             button.sendAction(on: [.leftMouseUp, .rightMouseUp])
         }
 
-        let settings = NSMenuItem(title: "设置…", action: #selector(openSettings), keyEquivalent: ",")
+        let settings = NSMenuItem(title: tr("设置…", "Settings…"), action: #selector(openSettings), keyEquivalent: ",")
         settings.target = self
         menu.addItem(settings)
         menu.addItem(.separator())
-        let quit = NSMenuItem(title: "退出 trackpad_pro", action: #selector(quit), keyEquivalent: "q")
+        let quit = NSMenuItem(title: tr("退出 trackpad_pro", "Quit trackpad_pro"), action: #selector(quit), keyEquivalent: "q")
         quit.target = self
         menu.addItem(quit)
         menu.delegate = self
@@ -58,11 +58,14 @@ final class StatusBarController: NSObject {
         let store = SettingsStore.shared
         item.button?.appearsDisabled = store.isPaused || !store.isTrusted
         if !store.isTrusted {
-            item.button?.toolTip = "trackpad_pro — 等待辅助功能权限"
+            item.button?.toolTip = tr("trackpad_pro — 等待辅助功能权限",
+                                      "trackpad_pro — waiting for Accessibility permission")
         } else if store.isPaused {
-            item.button?.toolTip = "手势已暂停 — 左键恢复，右键菜单"
+            item.button?.toolTip = tr("手势已暂停 — 左键恢复，右键菜单",
+                                      "Gestures paused — left-click to resume, right-click for menu")
         } else {
-            item.button?.toolTip = "手势运行中 — 左键暂停，右键菜单"
+            item.button?.toolTip = tr("手势运行中 — 左键暂停，右键菜单",
+                                      "Gestures active — left-click to pause, right-click for menu")
         }
     }
 

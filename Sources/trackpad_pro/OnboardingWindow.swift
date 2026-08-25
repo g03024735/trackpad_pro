@@ -8,23 +8,29 @@ enum OnboardingStep: Int, CaseIterable {
 
     var title: String {
         switch self {
-        case .welcome: return "欢迎使用 trackpad_pro"
-        case .move: return "移动窗口"
-        case .resize: return "调整窗口大小"
-        case .zoom: return "找不到指针？放大它"
-        case .minimize: return "最小化窗口"
-        case .close: return "恭喜，只差最后一步 🎉"
+        case .welcome: return tr("欢迎使用 trackpad_pro", "Welcome to trackpad_pro")
+        case .move: return tr("移动窗口", "Move a Window")
+        case .resize: return tr("调整窗口大小", "Resize a Window")
+        case .zoom: return tr("找不到指针？放大它", "Lost the Pointer? Zoom It")
+        case .minimize: return tr("最小化窗口", "Minimize a Window")
+        case .close: return tr("恭喜，只差最后一步 🎉", "One Last Step 🎉")
         }
     }
 
     var subtitle: String {
         switch self {
-        case .welcome: return "接下来用这个窗口亲手试一遍，每步做对会自动进入下一步。"
-        case .move: return "把指针放在这个窗口上，在触摸板上沿按下并拖动。"
-        case .resize: return "把指针放在这个窗口上，在触摸板右上角按下并拖动。"
-        case .zoom: return "单指从触摸板右边缘向内滑动，指针会放大；抬起手指即还原。"
-        case .minimize: return "把指针放在这个窗口上，在触摸板上沿左侧第二格按下、松开。\n窗口会收进 Dock，然后自己回来。"
-        case .close: return "前面的手势你都掌握了！把指针放在这个窗口上，\n在触摸板左上角按下、松开，关掉它——教学到此完成。"
+        case .welcome: return tr("接下来用这个窗口亲手试一遍，每步做对会自动进入下一步。",
+                                 "Try each gesture on this very window — each step advances automatically once you get it right.")
+        case .move: return tr("把指针放在这个窗口上，在触摸板上沿按下并拖动。",
+                              "Put the pointer over this window, then press and drag along the top edge of the trackpad.")
+        case .resize: return tr("把指针放在这个窗口上，在触摸板右上角按下并拖动。",
+                                "Put the pointer over this window, then press and drag in the top-right corner of the trackpad.")
+        case .zoom: return tr("单指从触摸板右边缘向内滑动，指针会放大；抬起手指即还原。",
+                              "Swipe inward from the right edge of the trackpad with one finger; lift to restore.")
+        case .minimize: return tr("把指针放在这个窗口上，在触摸板上沿左侧第二格按下、松开。\n窗口会收进 Dock，然后自己回来。",
+                                  "Put the pointer over this window, then press and release the second zone from the top-left.\nThe window drops into the Dock — and comes right back.")
+        case .close: return tr("前面的手势你都掌握了！把指针放在这个窗口上，\n在触摸板左上角按下、松开，关掉它——教学到此完成。",
+                               "You've mastered every gesture! Put the pointer over this window,\nthen press and release the top-left corner to close it — that completes the tutorial.")
         }
     }
 
@@ -171,7 +177,7 @@ struct OnboardingView: View {
                 stepDots
                 Spacer()
                 if model.step != .welcome && model.step != .close {
-                    Button("跳过") { model.advance() }
+                    Button(tr("跳过", "Skip")) { model.advance() }
                         .buttonStyle(.plain)
                         .foregroundStyle(.secondary)
                         .keyboardShortcut(.rightArrow, modifiers: .command)
@@ -204,11 +210,11 @@ struct OnboardingView: View {
     private var primaryButton: some View {
         switch model.step {
         case .welcome:
-            Button("开始") { model.advance() }
+            Button(tr("开始", "Start")) { model.advance() }
                 .keyboardShortcut(.defaultAction)
                 .buttonStyle(.borderedProminent)
         case .close:
-            Button("跳过，直接完成") { onFinish() }
+            Button(tr("跳过，直接完成", "Skip and finish")) { onFinish() }
                 .buttonStyle(.bordered)
         default:
             EmptyView()
@@ -417,7 +423,7 @@ final class OnboardingWindowController: NSObject, NSWindowDelegate {
                 defer: false
             )
             win.contentMinSize = NSSize(width: 560, height: 470)
-            win.title = "trackpad_pro 引导教学"
+            win.title = tr("trackpad_pro 引导教学", "trackpad_pro Tutorial")
             win.titlebarAppearsTransparent = true
             win.titleVisibility = .hidden
             win.contentView = NSHostingView(rootView: view)

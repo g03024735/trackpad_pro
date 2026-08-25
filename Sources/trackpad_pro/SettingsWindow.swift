@@ -26,7 +26,7 @@ struct SettingsView: View {
                 HStack(spacing: 5) {
                     Image(systemName: "arrow.left.and.right")
                         .font(.system(size: 9, weight: .semibold))
-                    Text("拖动白色手柄可调整热区大小")
+                    Text(tr("拖动白色手柄可调整热区大小", "Drag the white handles to resize zones"))
                 }
                 .font(.caption)
                 .foregroundStyle(.secondary)
@@ -40,7 +40,7 @@ struct SettingsView: View {
             // 经典表单：右对齐标签列 + 控件列。
             Grid(alignment: .leadingFirstTextBaseline, horizontalSpacing: 10, verticalSpacing: 12) {
                 GridRow {
-                    Text("手势:")
+                    Text(tr("手势:", "Gestures:"))
                         .gridColumnAlignment(.trailing)
                     VStack(alignment: .leading, spacing: 8) {
                         HStack(spacing: 16) {
@@ -55,7 +55,7 @@ struct SettingsView: View {
                     }
                 }
                 GridRow {
-                    Text("指针放大倍率:")
+                    Text(tr("指针放大倍率:", "Cursor zoom:"))
                         .gridColumnAlignment(.trailing)
                     HStack(spacing: 8) {
                         Slider(value: Binding(
@@ -72,9 +72,9 @@ struct SettingsView: View {
                     .opacity(store.config.cursorZoomEnabled ? 1 : 0.5)
                 }
                 GridRow {
-                    Text("启动:")
+                    Text(tr("启动:", "Startup:"))
                         .gridColumnAlignment(.trailing)
-                    Toggle("开机自动启动", isOn: $launchAtLogin)
+                    Toggle(tr("开机自动启动", "Launch at login"), isOn: $launchAtLogin)
                         .toggleStyle(.checkbox)
                         .disabled(!store.canLaunchAtLogin)
                         .onChange(of: launchAtLogin) { newValue in
@@ -83,9 +83,9 @@ struct SettingsView: View {
                         }
                 }
                 GridRow {
-                    Text("引导教学:")
+                    Text(tr("引导教学:", "Tutorial:"))
                         .gridColumnAlignment(.trailing)
-                    Button("重新观看") { OnboardingWindowController.shared.show() }
+                    Button(tr("重新观看", "Show again")) { OnboardingWindowController.shared.show() }
                 }
             }
             .padding(.leading, 36)
@@ -122,7 +122,7 @@ private struct ZoneHandles: View {
 
             ZStack(alignment: .topLeading) {
                 if c.closeEnabled {
-                    handle(vertical: true, help: "拖动调整关闭热区宽度")
+                    handle(vertical: true, help: tr("拖动调整关闭热区宽度", "Drag to adjust the close zone width"))
                         .position(x: CGFloat(c.closeZoneWidth) * w, y: bandMidY)
                         .gesture(drag { v in
                             let nv = Self.clamp(Float(v.location.x / w), 0.05...0.30)
@@ -132,7 +132,7 @@ private struct ZoneHandles: View {
                 }
                 if c.minimizeEnabled {
                     let start = CGFloat(c.minimizeZoneStart)
-                    handle(vertical: true, help: "拖动调整最小化热区宽度")
+                    handle(vertical: true, help: tr("拖动调整最小化热区宽度", "Drag to adjust the minimize zone width"))
                         .position(x: (start + CGFloat(c.minimizeZoneWidth)) * w, y: bandMidY)
                         .gesture(drag { v in
                             let nv = Self.clamp(Float(v.location.x / w - start), 0.05...0.30)
@@ -141,7 +141,7 @@ private struct ZoneHandles: View {
                         })
                 }
                 if c.resizeEnabled {
-                    handle(vertical: true, help: "拖动调整「调整大小」热区宽度")
+                    handle(vertical: true, help: tr("拖动调整「调整大小」热区宽度", "Drag to adjust the resize zone width"))
                         .position(x: (1 - CGFloat(c.cornerSize)) * w, y: bandMidY)
                         .gesture(drag { v in
                             let nv = Self.clamp(1 - Float(v.location.x / w), 0.08...0.30)
@@ -151,7 +151,7 @@ private struct ZoneHandles: View {
                 }
                 if c.cursorZoomEnabled {
                     let midY = (CGFloat(c.topEdgeHeight) + 1) / 2
-                    handle(vertical: true, help: "拖动调整右边缘触发区宽度")
+                    handle(vertical: true, help: tr("拖动调整右边缘触发区宽度", "Drag to adjust the right-edge zone width"))
                         .position(x: (1 - CGFloat(c.rightEdgeWidth)) * w, y: midY * h)
                         .gesture(drag { v in
                             let nv = Self.clamp(1 - Float(v.location.x / w), 0.03...0.15)
@@ -161,7 +161,7 @@ private struct ZoneHandles: View {
                 }
                 if c.moveEnabled {
                     let midX = Zone.move.rect(in: c).midX
-                    handle(vertical: false, help: "拖动调整上沿热区高度")
+                    handle(vertical: false, help: tr("拖动调整上沿热区高度", "Drag to adjust the top strip height"))
                         .position(x: midX * w, y: CGFloat(c.topEdgeHeight) * h)
                         .gesture(drag { v in
                             let nv = Self.clamp(Float(v.location.y / h), 0.05...0.25)
@@ -236,7 +236,7 @@ final class SettingsWindowController {
                 backing: .buffered,
                 defer: false
             )
-            win.title = "trackpad_pro 设置"
+            win.title = tr("trackpad_pro 设置", "trackpad_pro Settings")
             win.contentView = hosting
             win.isReleasedWhenClosed = false
             win.center()

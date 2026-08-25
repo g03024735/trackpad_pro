@@ -50,7 +50,7 @@ for arg in CommandLine.arguments.dropFirst() {
         DispatchQueue.main.asyncAfter(deadline: .now() + 4.0) { exit(0) }
         app.run()
     case "--help", "-h":
-        print("""
+        print(tr("""
         trackpad_pro — 触摸板增强
           左上角按下、松开      关闭当前窗口（按住时移动手指可取消）
           左上角右侧按下、松开  最小化当前窗口（同上）
@@ -61,10 +61,21 @@ for arg in CommandLine.arguments.dropFirst() {
         选项:
           --debug, -d         打印手指坐标与手势触发日志（用于调阈值）
           --reset-onboarding  下次启动重新显示引导教学
-        """)
+        """, """
+        trackpad_pro — trackpad window control
+          Press & release the top-left corner    close the window under the cursor (slide to cancel)
+          Press & release the zone next to it    minimize the window (same cancel)
+          Press & drag along the top edge        move the window
+          Press & drag the top-right corner      resize the window
+          Swipe in from the right edge           zoom the cursor, lift to restore
+
+        Options:
+          --debug, -d         print finger coordinates and gesture logs (for tuning)
+          --reset-onboarding  show the tutorial again on next launch
+        """))
         exit(0)
     default:
-        print("未知参数: \(arg)（--help 查看用法）")
+        print(tr("未知参数: \(arg)（--help 查看用法）", "Unknown argument: \(arg) (see --help)"))
         exit(1)
     }
 }
@@ -116,7 +127,8 @@ try? FileManager.default.createDirectory(
     atPath: (lockPath as NSString).deletingLastPathComponent, withIntermediateDirectories: true)
 let lockFD = open(lockPath, O_CREAT | O_RDWR | O_CLOEXEC, 0o644)
 if lockFD >= 0, flock(lockFD, LOCK_EX | LOCK_NB) != 0 {
-    print("已有另一个 trackpad_pro 实例在运行，本实例退出。")
+    print(tr("已有另一个 trackpad_pro 实例在运行，本实例退出。",
+             "Another trackpad_pro instance is already running; exiting."))
     exit(1)
 }
 
@@ -125,7 +137,8 @@ if lockFD >= 0, flock(lockFD, LOCK_EX | LOCK_NB) != 0 {
 if store.canLaunchAtLogin, !store.config.hasSetupLaunchAtLogin {
     store.launchAtLogin = true
     store.config.hasSetupLaunchAtLogin = true
-    print("已默认开启开机自启动（可在设置中关闭）。")
+    print(tr("已默认开启开机自启动（可在设置中关闭）。",
+             "Launch at login enabled by default (can be turned off in Settings)."))
 }
 
 // ---- 菜单栏 ----
@@ -135,21 +148,24 @@ StatusBarController.shared.install()
 TouchTracker.shared.debug = debugFlag
 let deviceCount = TouchTracker.shared.start()
 guard deviceCount > 0 else {
-    print("未找到多点触控设备（MTDeviceCreateList 为空）。")
+    print(tr("未找到多点触控设备（MTDeviceCreateList 为空）。",
+             "No multitouch device found (MTDeviceCreateList is empty)."))
     exit(1)
 }
-print("已监听 \(deviceCount) 个触摸板设备。")
+print(tr("已监听 \(deviceCount) 个触摸板设备。", "Listening on \(deviceCount) trackpad device(s)."))
 
 // ---- 辅助功能权限 ----
 // 不用系统的授权弹窗（kAXTrustedCheckOptionPrompt），改用自己的引导面板，避免对话框堆在屏幕上。
 func startGestures() {
     GestureController.shared.config = effectiveConfig()
     guard GestureController.shared.start() else {
-        print("创建事件监听 (CGEventTap) 失败，通常是辅助功能权限未生效，请重新勾选后重启程序。")
+        print(tr("创建事件监听 (CGEventTap) 失败，通常是辅助功能权限未生效，请重新勾选后重启程序。",
+                 "Failed to create the event tap (CGEventTap) — usually a stale Accessibility grant. Re-enable it and relaunch."))
         exit(1)
     }
     store.isTrusted = true
-    print("trackpad_pro 运行中：左上角=关闭，其右侧=最小化，上沿拖动=移动，右上角拖动=调整大小，右边缘滑入=放大指针。")
+    print(tr("trackpad_pro 运行中：左上角=关闭，其右侧=最小化，上沿拖动=移动，右上角拖动=调整大小，右边缘滑入=放大指针。",
+             "trackpad_pro running: top-left = close, next to it = minimize, top-edge drag = move, top-right drag = resize, right-edge swipe = zoom cursor."))
     if !store.config.hasCompletedOnboarding {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { OnboardingWindowController.shared.show() }
     }
@@ -157,12 +173,12 @@ func startGestures() {
 
 func relaunchSelf() -> Never {
     let exePath = CommandLine.arguments[0]
-    print("检测到已授权，重新启动…")
+    print(tr("检测到已授权，重新启动…", "Permission granted — relaunching…"))
     fflush(stdout)
     // 用 execv 以同样的参数替换当前进程，获得干净的授权状态。
     let cArgs = CommandLine.arguments.map { strdup($0) } + [nil]
     execv(exePath, cArgs)
-    print("自动重启失败，请手动重新启动程序。")
+    print(tr("自动重启失败，请手动重新启动程序。", "Automatic relaunch failed; please restart the app manually."))
     exit(1)
 }
 
@@ -181,7 +197,8 @@ func probeTrusted() -> Bool {
 if AXIsProcessTrusted() {
     startGestures()
 } else {
-    print("需要「辅助功能」权限：系统设置 → 隐私与安全性 → 辅助功能，打开 trackpad_pro 的开关。等待授权中（授权后会自动重启）…")
+    print(tr("需要「辅助功能」权限：系统设置 → 隐私与安全性 → 辅助功能，打开 trackpad_pro 的开关。等待授权中（授权后会自动重启）…",
+             "Accessibility permission required: System Settings → Privacy & Security → Accessibility, enable trackpad_pro. Waiting for the grant (the app relaunches automatically)…"))
     let appPath = Bundle.main.bundleURL.pathExtension == "app" ? Bundle.main.bundlePath : CommandLine.arguments[0]
     PermissionWindow.shared.show(appPath: appPath)
     Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
