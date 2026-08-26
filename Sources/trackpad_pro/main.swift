@@ -113,6 +113,7 @@ windowSwitcher.bandHeight = store.config.bottomEdgeHeight
 windowSwitcher.stepDistance = store.config.switcherStepDistance
 windowSwitcher.rightExclusion = store.config.cursorZoomEnabled ? store.config.rightEdgeWidth : 0
 windowSwitcher.rightToNext = store.config.switcherRightToNext
+windowSwitcher.movesPointer = store.config.switcherMovesPointer
 windowSwitcher.debug = debugFlag
 
 TouchTracker.shared.onFrame = { fingers in
@@ -132,6 +133,7 @@ var configCancellable = store.$config.sink { c in
     windowSwitcher.stepDistance = c.switcherStepDistance
     windowSwitcher.rightExclusion = c.cursorZoomEnabled ? c.rightEdgeWidth : 0
     windowSwitcher.rightToNext = c.switcherRightToNext
+    windowSwitcher.movesPointer = c.switcherMovesPointer
 }
 
 // ---- 单实例 ----
@@ -187,14 +189,29 @@ func startGestures() {
 }
 
 func relaunchSelf() -> Never {
-    let exePath = CommandLine.arguments[0]
     print(tr("检测到已授权，重新启动…", "Permission granted — relaunching…"))
     fflush(stdout)
-    // 用 execv 以同样的参数替换当前进程，获得干净的授权状态。
-    let cArgs = CommandLine.arguments.map { strdup($0) } + [nil]
-    execv(exePath, cArgs)
-    print(tr("自动重启失败，请手动重新启动程序。", "Automatic relaunch failed; please restart the app manually."))
-    exit(1)
+    // 不能用 execv：替换映像后的进程接不上原 WindowServer 会话，
+    // 菜单栏图标会注册到错误位置。改为延迟拉起一份新实例后退出当前进程
+    // （退出即释放单实例锁，新实例稍后正常拿锁）。
+    let args = CommandLine.arguments.dropFirst().map { "'\($0)'" }.joined(separator: " ")
+    let bundleURL = Bundle.main.bundleURL
+    let cmd: String
+    if bundleURL.pathExtension == "app" {
+        cmd = "sleep 0.4; open -n '\(bundleURL.path)'" + (args.isEmpty ? "" : " --args \(args)")
+    } else {
+        cmd = "sleep 0.4; exec '\(CommandLine.arguments[0])' \(args)"
+    }
+    let p = Process()
+    p.executableURL = URL(fileURLWithPath: "/bin/sh")
+    p.arguments = ["-c", cmd]
+    do {
+        try p.run()
+    } catch {
+        print(tr("自动重启失败，请手动重新启动程序。", "Automatic relaunch failed; please restart the app manually."))
+        exit(1)
+    }
+    exit(0)
 }
 
 /// 系统对已在运行的进程会缓存"未授权"结果，用一个新进程探测真实状态。

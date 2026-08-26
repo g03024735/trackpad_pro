@@ -47,7 +47,15 @@ final class CursorZoom {
     }
 
     func zoom(to scale: Float) {
-        guard available, !isZoomed else { return }
+        guard available else { return }
+        if isPulsing {
+            // 脉冲让位给手势：停掉剩余步骤，基准倍率沿用脉冲开始时记录的。
+            pulseGeneration += 1
+            isPulsing = false
+            _ = setScale(connection, min(4, max(scale, baseScale * 1.5)))
+            return
+        }
+        guard !isZoomed else { return }
         var current: Float = 1
         if getScale(connection, &current) != 0 { current = 1 }
         baseScale = current
@@ -60,8 +68,48 @@ final class CursorZoom {
 
     func restore() {
         guard available, isZoomed else { return }
+        pulseGeneration += 1
+        isPulsing = false
         _ = setScale(connection, baseScale)
         UserDefaults.standard.removeObject(forKey: Self.savedBaseKey)
         isZoomed = false
+    }
+
+    private var pulseGeneration = 0
+    private var isPulsing = false
+
+    /// 脉冲：指针短暂放大再平滑还原，用于提示指针落点。主线程调用。
+    /// 放大手势进行中则跳过；重复触发会重启脉冲；手势介入时脉冲让位。
+    func pulse(to scale: Float = 2.2, duration: TimeInterval = 0.45) {
+        guard available else { return }
+        if isZoomed && !isPulsing { return }  // 右缘放大手势进行中
+        if !isZoomed {
+            var current: Float = 1
+            if getScale(connection, &current) != 0 { current = 1 }
+            baseScale = current
+            UserDefaults.standard.set(baseScale, forKey: Self.savedBaseKey)
+            isZoomed = true
+        }
+        isPulsing = true
+        pulseGeneration += 1
+        let gen = pulseGeneration
+        let base = baseScale
+        let peak = min(4, max(scale, base * 1.6))
+        let steps = 14
+        for i in 0...steps {
+            let t = Double(i) / Double(steps)
+            DispatchQueue.main.asyncAfter(deadline: .now() + t * duration) { [self] in
+                guard isPulsing, gen == pulseGeneration else { return }
+                if i == steps {
+                    _ = setScale(connection, base)
+                    UserDefaults.standard.removeObject(forKey: Self.savedBaseKey)
+                    isZoomed = false
+                    isPulsing = false
+                } else {
+                    // 正弦包络：起终为原倍率，中点到峰值。
+                    _ = setScale(connection, base + (peak - base) * Float(sin(t * .pi)))
+                }
+            }
+        }
     }
 }

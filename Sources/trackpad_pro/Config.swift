@@ -44,12 +44,15 @@ struct Config: Codable, Equatable {
     /// 下沿左右滑动切换窗口。
     var switcherEnabled = true
     /// 下沿判定带高度（占触摸板比例）：y < bottomEdgeHeight 视为下沿。
-    var bottomEdgeHeight: Float = 0.12
+    var bottomEdgeHeight: Float = 0.09
     /// 每滑动多少（归一化距离）切换到下一个窗口。
     var switcherStepDistance: Float = 0.055
 
     /// 向右滑动切换到下一个（层叠里更靠后的）窗口；false 则向左滑。
     var switcherRightToNext = true
+
+    /// 选定窗口后把指针移到该窗口中心（指针已在窗口内则不动）。
+    var switcherMovesPointer = true
 
     /// 打印手指坐标，用于调阈值（命令行参数，不持久化）。
     var debug = false
@@ -65,7 +68,7 @@ struct Config: Codable, Equatable {
         case cornerSize, closeZoneWidth, minimizeZoneWidth, topEdgeHeight
         case requireSingleFinger, tapFallbackInterval, closeCancelDistance
         case cursorZoomEnabled, rightEdgeWidth, edgeSwipeActivationDistance, cursorZoomScale
-        case switcherEnabled, bottomEdgeHeight, switcherStepDistance, switcherRightToNext
+        case switcherEnabled, bottomEdgeHeight, switcherStepDistance, switcherRightToNext, switcherMovesPointer
         case hasCompletedOnboarding, hasSetupLaunchAtLogin
     }
 
@@ -94,6 +97,7 @@ struct Config: Codable, Equatable {
         bottomEdgeHeight = try c.decodeIfPresent(Float.self, forKey: .bottomEdgeHeight) ?? d.bottomEdgeHeight
         switcherStepDistance = try c.decodeIfPresent(Float.self, forKey: .switcherStepDistance) ?? d.switcherStepDistance
         switcherRightToNext = try c.decodeIfPresent(Bool.self, forKey: .switcherRightToNext) ?? d.switcherRightToNext
+        switcherMovesPointer = try c.decodeIfPresent(Bool.self, forKey: .switcherMovesPointer) ?? d.switcherMovesPointer
         hasCompletedOnboarding = try c.decodeIfPresent(Bool.self, forKey: .hasCompletedOnboarding) ?? d.hasCompletedOnboarding
         hasSetupLaunchAtLogin = try c.decodeIfPresent(Bool.self, forKey: .hasSetupLaunchAtLogin) ?? d.hasSetupLaunchAtLogin
     }

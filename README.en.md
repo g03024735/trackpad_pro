@@ -13,7 +13,7 @@ Turn your trackpad into a window remote: press or drag in dedicated trackpad zon
 | Press and drag along the **top edge** | Blue overlay; the window follows your finger |
 | Press and drag the **top-right corner** | Green overlay; drag to resize (mapped to the window's bottom-right corner: drag down-right = larger) |
 | Swipe inward from the **right edge** with one finger | Cursor zooms (3× by default), restores when you lift your finger. For when you've lost the pointer |
-| Swipe left/right along the **bottom edge** with one finger | A switcher bar appears at the bottom of the screen; windows are brought to the front one by one in stacking order as you swipe — faster swipes accelerate (up to 4×); **lift your finger to pick** the current window |
+| **Touch down on the bottom edge** and swipe left/right with one finger | A switcher bar appears at the bottom of the screen; windows are brought to the front one by one in stacking order as you swipe — faster swipes accelerate (up to 4×); **lift your finger to pick** the current window — the pointer jumps to its center with a brief zoom pulse so you can spot it. Sliding into the bottom edge from elsewhere does not trigger it |
 
 Gestures act on the **window under the mouse cursor** (it does not need to be frontmost).
 When there is no regular window under the cursor (desktop, menu bar, Dock, …), gestures don't trigger and events pass through untouched — exactly as if the tool weren't installed.
@@ -55,7 +55,7 @@ your machine; the code is auditable.
 ## UI
 
 - **Menu bar icon**: left-click pauses/resumes gestures (the icon dims while paused), right-click opens the menu (settings, quit)
-- **Settings window**: a live trackpad diagram at the top shows every zone and your current finger position — **drag the white handles on the diagram to resize zones**; each gesture can be toggled individually, and the switcher direction is configurable
+- **Settings window**: a live trackpad diagram at the top shows every zone and your current finger position — **drag the white handles on the diagram to resize zones**; each gesture can be toggled individually, and the switcher's direction and pointer-follow are configurable
 - **Interactive tutorial**: opens automatically after first authorization — 6 steps (welcome → move → resize → cursor zoom → minimize → close), practiced on the tutorial window itself; each step advances when you perform it correctly, and closing the window with the gesture finishes the tutorial. While the tutorial is open, close/minimize gestures only affect the tutorial window, so your real windows are safe. Re-open it any time from settings, or launch with `--reset-onboarding`
 - **Launch at login**: enabled by default on the first run as an .app; turn it off in settings — you can always relaunch from /Applications or Spotlight
 
@@ -97,7 +97,7 @@ Defaults live in `Sources/trackpad_pro/Config.swift`:
 - `tapFallbackInterval` (default 0.25s): for tap-to-click, how far back to look up the finger that just lifted
 - `closeCancelDistance` (default 10px): moving beyond this distance after pressing in the close/minimize zone cancels the action
 - `cursorZoomEnabled` (default true) / `rightEdgeWidth` (0.06) / `edgeSwipeActivationDistance` (0.04) / `cursorZoomScale` (3.0): right-edge swipe cursor zoom
-- `switcherEnabled` (default true) / `bottomEdgeHeight` (0.12) / `switcherStepDistance` (0.055 — distance per window at slow speed; fast swipes accelerate up to 4×) / `switcherRightToNext` (true — swipe right for the next window): bottom-edge window switcher
+- `switcherEnabled` (default true) / `bottomEdgeHeight` (0.09) / `switcherStepDistance` (0.055 — distance per window at slow speed; fast swipes accelerate up to 4×) / `switcherRightToNext` (true — swipe right for the next window) / `switcherMovesPointer` (true — move the pointer to the picked window's center): bottom-edge window switcher
 
 ## Packaging as .app
 

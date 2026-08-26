@@ -17,6 +17,8 @@ final class WindowSwitcher {
     var rightExclusion: Float = 0.06
     /// 向右滑动切换到下一个（更靠后的）窗口；false 则向左滑。
     var rightToNext = true
+    /// 选定窗口后把指针移到该窗口中心（指针已在窗口内则不动）。
+    var movesPointer = true
     var debug = false
 
     struct WindowRef {
@@ -47,12 +49,23 @@ final class WindowSwitcher {
     private var state: State = .idle
     private var session: ActiveSession?
 
+    /// 每根手指首次接触时的落点：只有“直接落在下沿”的手指才能起手，
+    /// 从触摸板其他位置滑进下沿的手指是在正常移动指针，不触发切换。
+    private var startPositions: [Int32: (x: Float, y: Float)] = [:]
+
     // 置前节流：滑得快时合并中间目标，按固定节奏只置前最新的，减少窗口猛跳。
     private var pendingRaise: WindowRef?
     private var raiseScheduled = false
     private var lastRaiseAt: CFTimeInterval = 0
 
     func update(_ fingers: [Finger]) {
+        // 记录新手指的落点，清理已抬起的。
+        let ids = Set(fingers.map { $0.id })
+        for f in fingers where startPositions[f.id] == nil {
+            startPositions[f.id] = (f.x, f.y)
+        }
+        startPositions = startPositions.filter { ids.contains($0.key) }
+
         guard enabled else { cancel(); return }
         // 鼠标按着（真实点击/拖拽）时不起手。只挡未激活阶段：
         // 已激活后滑动稍用力就可能压出物理点击，不能因此中断手势。
@@ -61,9 +74,12 @@ final class WindowSwitcher {
         switch state {
         case .idle:
             guard !buttonDown else { return }
-            // 下沿带内恰好一根手指（不含右缘条）即作为候选起手；
-            // 搭在触摸板其他位置的手指不影响判定。
-            let candidates = fingers.filter { $0.y < bandHeight && $0.x < 1 - rightExclusion }
+            // 候选起手：恰好一根手指在下沿带内，且它的落点也在带内（不含右缘条）——
+            // 从别处滑进来的手指不算；搭在触摸板其他位置的手指不影响判定。
+            let candidates = fingers.filter { f in
+                guard let start = startPositions[f.id] else { return false }
+                return f.y < bandHeight && start.y < bandHeight && start.x < 1 - rightExclusion
+            }
             guard candidates.count == 1, let f = candidates.first else { return }
             state = .tracking(id: f.id, startX: f.x)
 
@@ -127,12 +143,26 @@ final class WindowSwitcher {
     }
 
     private func endActive() {
-        if debug, let s = session {
-            print("[switcher] 结束，停在第 \(s.index + 1)/\(s.windows.count) 个窗口")
+        if let s = session {
+            if debug { print("[switcher] 结束，停在第 \(s.index + 1)/\(s.windows.count) 个窗口") }
+            // 真的切换了窗口才移指针；停在原前台（index 0）不动。
+            if movesPointer, s.index > 0 {
+                movePointer(toCenterOf: s.windows[s.index].bounds)
+            }
         }
         session = nil
         state = .idle
         DispatchQueue.main.async { SwitcherHUD.shared.hideSoon() }
+    }
+
+    /// 把指针统一移到所选窗口正中，并脉冲一下反馈切换完成。
+    private func movePointer(toCenterOf bounds: CGRect) {
+        DispatchQueue.main.async {
+            let target = CGPoint(x: bounds.midX, y: bounds.midY)
+            CGEvent(mouseEventSource: nil, mouseType: .mouseMoved,
+                    mouseCursorPosition: target, mouseButton: .left)?.post(tap: .cghidEventTap)
+            CursorZoom.shared.pulse()
+        }
     }
 
     /// 层叠顺序（前台在先）的普通窗口快照。

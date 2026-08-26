@@ -68,6 +68,15 @@ struct SettingsView: View {
                     .opacity(store.config.switcherEnabled ? 1 : 0.5)
                 }
                 GridRow {
+                    Text(tr("指针跟随:", "Pointer follow:"))
+                        .gridColumnAlignment(.trailing)
+                    Toggle(tr("切换后把指针移到所选窗口", "Move the pointer to the picked window"),
+                           isOn: $store.config.switcherMovesPointer)
+                        .toggleStyle(.checkbox)
+                        .disabled(!store.config.switcherEnabled)
+                        .opacity(store.config.switcherEnabled ? 1 : 0.5)
+                }
+                GridRow {
                     Text(tr("指针放大倍率:", "Cursor zoom:"))
                         .gridColumnAlignment(.trailing)
                     HStack(spacing: 8) {
