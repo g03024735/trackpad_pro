@@ -10,7 +10,7 @@
 set -e
 cd "$(dirname "$0")"
 
-VERSION="0.2.0"
+VERSION="0.3.0"
 
 INSTALL=0 UNIVERSAL=0 ZIP=0
 for arg in "$@"; do

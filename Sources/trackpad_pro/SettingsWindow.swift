@@ -51,8 +51,21 @@ struct SettingsView: View {
                         HStack(spacing: 16) {
                             gestureCheckbox(.resize, isOn: $store.config.resizeEnabled)
                             gestureCheckbox(.zoom, isOn: $store.config.cursorZoomEnabled)
+                            gestureCheckbox(.switcher, isOn: $store.config.switcherEnabled)
                         }
                     }
+                }
+                GridRow {
+                    Text(tr("切换方向:", "Switch direction:"))
+                        .gridColumnAlignment(.trailing)
+                    Picker("", selection: $store.config.switcherRightToNext) {
+                        Text(tr("向右滑切换下一个窗口", "Swipe right for next window")).tag(true)
+                        Text(tr("向左滑切换下一个窗口", "Swipe left for next window")).tag(false)
+                    }
+                    .labelsHidden()
+                    .fixedSize()
+                    .disabled(!store.config.switcherEnabled)
+                    .opacity(store.config.switcherEnabled ? 1 : 0.5)
                 }
                 GridRow {
                     Text(tr("指针放大倍率:", "Cursor zoom:"))
@@ -167,6 +180,16 @@ private struct ZoneHandles: View {
                             let nv = Self.clamp(Float(v.location.y / h), 0.05...0.25)
                             store.config.topEdgeHeight = nv
                             dragLabel = (Self.pct(nv), midX * w, CGFloat(nv) * h)
+                        })
+                }
+                if c.switcherEnabled {
+                    let midX = Zone.switcher.rect(in: c).midX
+                    handle(vertical: false, help: tr("拖动调整下沿热区高度", "Drag to adjust the bottom strip height"))
+                        .position(x: midX * w, y: (1 - CGFloat(c.bottomEdgeHeight)) * h)
+                        .gesture(drag { v in
+                            let nv = Self.clamp(1 - Float(v.location.y / h), 0.05...0.15)
+                            store.config.bottomEdgeHeight = nv
+                            dragLabel = (Self.pct(nv), midX * w, (1 - CGFloat(nv)) * h)
                         })
                 }
 

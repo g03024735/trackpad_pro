@@ -2,7 +2,7 @@ import SwiftUI
 
 /// 手势区域的统一配色与名称。
 enum Zone: CaseIterable, Hashable {
-    case close, minimize, move, resize, zoom
+    case close, minimize, move, resize, zoom, switcher
 
     var color: Color {
         switch self {
@@ -11,6 +11,7 @@ enum Zone: CaseIterable, Hashable {
         case .move: return .blue
         case .resize: return .green
         case .zoom: return .purple
+        case .switcher: return .teal
         }
     }
 
@@ -21,6 +22,7 @@ enum Zone: CaseIterable, Hashable {
         case .move: return tr("移动", "Move")
         case .resize: return tr("调整大小", "Resize")
         case .zoom: return tr("放大指针", "Zoom cursor")
+        case .switcher: return tr("窗口切换", "Switch windows")
         }
     }
 
@@ -31,6 +33,7 @@ enum Zone: CaseIterable, Hashable {
         case .move: return "arrow.up.and.down.and.arrow.left.and.right"
         case .resize: return "arrow.up.left.and.arrow.down.right"
         case .zoom: return "cursorarrow.motionlines"
+        case .switcher: return "rectangle.stack"
         }
     }
 
@@ -41,6 +44,7 @@ enum Zone: CaseIterable, Hashable {
         case .move: return c.moveEnabled
         case .resize: return c.resizeEnabled
         case .zoom: return c.cursorZoomEnabled
+        case .switcher: return c.switcherEnabled
         }
     }
 
@@ -63,6 +67,10 @@ enum Zone: CaseIterable, Hashable {
         case .zoom:
             let zoneTop = c.resizeEnabled ? top : 0
             return CGRect(x: 1 - CGFloat(c.rightEdgeWidth), y: zoneTop, width: CGFloat(c.rightEdgeWidth), height: 1 - zoneTop)
+        case .switcher:
+            let h = CGFloat(c.bottomEdgeHeight)
+            let end = c.cursorZoomEnabled ? 1 - CGFloat(c.rightEdgeWidth) : 1
+            return CGRect(x: 0, y: 1 - h, width: end, height: h)
         }
     }
 }

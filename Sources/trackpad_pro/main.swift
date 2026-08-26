@@ -106,8 +106,18 @@ edgeSwipe.onEnded = {
         if debugFlag { print("[gesture] 手指抬起 → 指针还原") }
     }
 }
+// ---- 下沿滑动切换窗口（不需要权限；置前其他应用窗口用到 AX，仅在已授权时有效果）----
+let windowSwitcher = WindowSwitcher()
+windowSwitcher.enabled = store.config.switcherEnabled
+windowSwitcher.bandHeight = store.config.bottomEdgeHeight
+windowSwitcher.stepDistance = store.config.switcherStepDistance
+windowSwitcher.rightExclusion = store.config.cursorZoomEnabled ? store.config.rightEdgeWidth : 0
+windowSwitcher.rightToNext = store.config.switcherRightToNext
+windowSwitcher.debug = debugFlag
+
 TouchTracker.shared.onFrame = { fingers in
     edgeSwipe.update(fingers)
+    if !store.isPaused { windowSwitcher.update(fingers) }
     FingerPublisher.shared.push(fingers)
 }
 
@@ -117,6 +127,11 @@ var configCancellable = store.$config.sink { c in
     edgeSwipe.edgeWidth = c.rightEdgeWidth
     edgeSwipe.activationDistance = c.edgeSwipeActivationDistance
     edgeSwipe.topExclusion = c.resizeEnabled ? c.topEdgeHeight : 0
+    windowSwitcher.enabled = c.switcherEnabled
+    windowSwitcher.bandHeight = c.bottomEdgeHeight
+    windowSwitcher.stepDistance = c.switcherStepDistance
+    windowSwitcher.rightExclusion = c.cursorZoomEnabled ? c.rightEdgeWidth : 0
+    windowSwitcher.rightToNext = c.switcherRightToNext
 }
 
 // ---- 单实例 ----

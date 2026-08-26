@@ -41,6 +41,16 @@ struct Config: Codable, Equatable {
     /// 指针放大倍率（1–4）。
     var cursorZoomScale: Float = 3.0
 
+    /// 下沿左右滑动切换窗口。
+    var switcherEnabled = true
+    /// 下沿判定带高度（占触摸板比例）：y < bottomEdgeHeight 视为下沿。
+    var bottomEdgeHeight: Float = 0.12
+    /// 每滑动多少（归一化距离）切换到下一个窗口。
+    var switcherStepDistance: Float = 0.055
+
+    /// 向右滑动切换到下一个（层叠里更靠后的）窗口；false 则向左滑。
+    var switcherRightToNext = true
+
     /// 打印手指坐标，用于调阈值（命令行参数，不持久化）。
     var debug = false
 
@@ -55,6 +65,7 @@ struct Config: Codable, Equatable {
         case cornerSize, closeZoneWidth, minimizeZoneWidth, topEdgeHeight
         case requireSingleFinger, tapFallbackInterval, closeCancelDistance
         case cursorZoomEnabled, rightEdgeWidth, edgeSwipeActivationDistance, cursorZoomScale
+        case switcherEnabled, bottomEdgeHeight, switcherStepDistance, switcherRightToNext
         case hasCompletedOnboarding, hasSetupLaunchAtLogin
     }
 
@@ -79,6 +90,10 @@ struct Config: Codable, Equatable {
         rightEdgeWidth = try c.decodeIfPresent(Float.self, forKey: .rightEdgeWidth) ?? d.rightEdgeWidth
         edgeSwipeActivationDistance = try c.decodeIfPresent(Float.self, forKey: .edgeSwipeActivationDistance) ?? d.edgeSwipeActivationDistance
         cursorZoomScale = try c.decodeIfPresent(Float.self, forKey: .cursorZoomScale) ?? d.cursorZoomScale
+        switcherEnabled = try c.decodeIfPresent(Bool.self, forKey: .switcherEnabled) ?? d.switcherEnabled
+        bottomEdgeHeight = try c.decodeIfPresent(Float.self, forKey: .bottomEdgeHeight) ?? d.bottomEdgeHeight
+        switcherStepDistance = try c.decodeIfPresent(Float.self, forKey: .switcherStepDistance) ?? d.switcherStepDistance
+        switcherRightToNext = try c.decodeIfPresent(Bool.self, forKey: .switcherRightToNext) ?? d.switcherRightToNext
         hasCompletedOnboarding = try c.decodeIfPresent(Bool.self, forKey: .hasCompletedOnboarding) ?? d.hasCompletedOnboarding
         hasSetupLaunchAtLogin = try c.decodeIfPresent(Bool.self, forKey: .hasSetupLaunchAtLogin) ?? d.hasSetupLaunchAtLogin
     }

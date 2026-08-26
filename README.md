@@ -13,10 +13,10 @@
 | 在触摸板**上沿**按下并拖动 | 窗口盖上蓝色提示层，随手指移动 |
 | 在触摸板**右上角**按下并拖动 | 窗口盖上绿色提示层，拖动调整窗口大小（映射到窗口右下角：向右下拖 = 放大） |
 | 单指从触摸板**右边缘**起手向内滑动 | 指针放大（默认 3 倍），手指抬起即还原。用于找不到指针时 |
+| 单指在触摸板**下沿**左右滑动 | 屏幕下方浮出切换指示条，按窗口层叠顺序逐个把窗口带到前台预览；滑得越快切得越快（最高 4 倍加速），**抬起手指即选定**当前窗口 |
 
 手势作用于**鼠标指针下方的窗口**（不要求该窗口或应用处于前台）。
 指针下没有普通窗口时（桌面、菜单栏、Dock 等），手势不触发、事件原样放行，和没装本工具时一样。
-想改成作用于前台聚焦窗口，把 `Config.targetUnderCursor` 设为 `false`。
 
 ## 安装
 
@@ -51,9 +51,10 @@ cd trackpad_pro
 
 界面文案跟随系统语言：中文系统显示中文，其余显示英文。
 
-- **菜单栏图标**：运行状态、暂停手势、设置、引导教学、开机自动启动、退出
-- **设置窗口**：顶部触摸板示意图实时显示各功能区和你当前的手指位置；每个手势可单独开关、调整区域大小
-- **引导教学**：首次授权后自动弹出，5 步（欢迎 → 移动 → 放大指针 → 最小化 → 关闭），操作对象就是教学窗口本身，做对自动进入下一步。菜单栏可随时重看，或 `--reset-onboarding` 启动
+- **菜单栏图标**：左键暂停/恢复手势（图标变灰表示已暂停），右键弹出菜单（设置、退出）
+- **设置窗口**：顶部触摸板示意图实时显示各功能区和你当前的手指位置，**直接拖动示意图上的白色手柄调整各热区大小**；每个手势可单独开关，窗口切换方向可选
+- **引导教学**：首次授权后自动弹出，6 步（欢迎 → 移动 → 调整大小 → 放大指针 → 最小化 → 关闭），操作对象就是教学窗口本身，做对自动进入下一步，最后一步做对关闭手势即完成。教学期间关闭/最小化只对教学窗口生效，不会误伤真实窗口。菜单栏「设置」里可随时重看，或 `--reset-onboarding` 启动
+- **开机自启**：首次以 .app 方式运行时默认开启，设置里可关闭；关闭后可从「应用程序」或 Spotlight 启动
 
 ## 原理
 
@@ -82,15 +83,15 @@ swift build -c release
 
 设置窗口里可调的项会持久化到 UserDefaults（`config` 键）。默认值见 `Sources/trackpad_pro/Config.swift`：
 
-- `cornerSize`（默认 0.15）：上沿功能区高度；也是右上角（调整大小）的宽度
+- `topEdgeHeight`（默认 0.10）：上沿功能区（关闭/最小化/拖窗/调整大小）的统一高度
 - `closeZoneWidth`（默认 0.10）：关闭区宽度，贴左边缘
-- `minimizeZoneWidth`（默认 0.15）：最小化区宽度，紧挨关闭区右侧（即 10%–25%）
-- `topEdgeHeight`（默认 0.10）：上沿拖窗判定区域高度
+- `minimizeZoneWidth`（默认 0.10）：最小化区宽度，紧挨关闭区右侧（即 10%–20%）
+- `cornerSize`（默认 0.10）：右上角（调整大小）区宽度
 - `requireSingleFinger`（默认 true）：只在单指时触发
 - `tapFallbackInterval`（默认 0.25s）：轻点（tap to click）时回溯刚抬起的手指位置
 - `closeCancelDistance`（默认 10px）：关闭/最小化区按下后指针移动超过此距离即取消
-- `targetUnderCursor`（默认 true）：作用于指针下方窗口；false 则作用于前台聚焦窗口
 - `cursorZoomEnabled`（默认 true）/ `rightEdgeWidth`（0.06）/ `edgeSwipeActivationDistance`（0.04）/ `cursorZoomScale`（3.0）：右边缘滑入放大指针
+- `switcherEnabled`（默认 true）/ `bottomEdgeHeight`（0.12）/ `switcherStepDistance`（0.055，慢滑一格的距离，快滑最高 4 倍加速）/ `switcherRightToNext`（true，向右滑切换下一个窗口）：下沿滑动切换窗口
 
 ## 打包为 .app
 
@@ -131,9 +132,11 @@ Sources/trackpad_pro/StatusBarController.swift 菜单栏图标与菜单
 Sources/trackpad_pro/TrackpadDiagram.swift  触摸板示意图（设置/教学共用）
 Sources/trackpad_pro/SettingsWindow.swift   设置窗口
 Sources/trackpad_pro/OnboardingWindow.swift 引导教学窗口与动画
+Sources/trackpad_pro/WindowSwitcher.swift   下沿滑动切换窗口 + 切换指示条
 Sources/trackpad_pro/GestureEvents.swift    手势完成事件（教学订阅）
+Sources/trackpad_pro/L10n.swift             双语文案（跟随系统语言）
 Sources/trackpad_pro/Config.swift           阈值
-Sources/trackpad_pro/main.swift             入口、权限
+Sources/trackpad_pro/main.swift             入口、权限、单实例锁
 ```
 
 ## License

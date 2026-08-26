@@ -309,6 +309,9 @@ private struct FingerOverlay: View {
         case .resize:
             let x = 1 - Double(config.cornerSize) / 2 + 0.1 * easeInOut(ramp(t, 0.3, 0.7))
             return (CGPoint(x: x, y: 1 - topEdge / 2), true, pressRing(down: 0.18, up: 0.76))
+        case .switcher:
+            let x = 0.72 - 0.44 * easeInOut(ramp(t, 0.15, 0.8))
+            return (CGPoint(x: x, y: Double(config.bottomEdgeHeight) / 2), true, 0)
         }
     }
 
@@ -361,6 +364,16 @@ private struct ScreenMock: View {
             case .resize:
                 let p = easeInOut(ramp(t, 0.3, 0.7))
                 MiniWindow(color: zone.color, width: 84 + 30 * p, height: 54 + 18 * p).offset(y: -4)
+            case .switcher:
+                // 前面的窗口退后、后面的窗口来到前台。
+                let p = easeInOut(ramp(t, 0.25, 0.7))
+                MiniWindow(color: .gray)
+                    .scaleEffect(1 - 0.12 * p)
+                    .offset(x: -12 * p, y: -4 - 6 * p)
+                    .opacity(1 - 0.45 * p)
+                MiniWindow(color: zone.color)
+                    .scaleEffect(0.85 + 0.15 * p)
+                    .offset(x: 26 - 26 * p, y: 8 - 12 * p)
             }
         }
     }

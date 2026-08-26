@@ -13,10 +13,10 @@ Turn your trackpad into a window remote: press or drag in dedicated trackpad zon
 | Press and drag along the **top edge** | Blue overlay; the window follows your finger |
 | Press and drag the **top-right corner** | Green overlay; drag to resize (mapped to the window's bottom-right corner: drag down-right = larger) |
 | Swipe inward from the **right edge** with one finger | Cursor zooms (3× by default), restores when you lift your finger. For when you've lost the pointer |
+| Swipe left/right along the **bottom edge** with one finger | A switcher bar appears at the bottom of the screen; windows are brought to the front one by one in stacking order as you swipe — faster swipes accelerate (up to 4×); **lift your finger to pick** the current window |
 
 Gestures act on the **window under the mouse cursor** (it does not need to be frontmost).
 When there is no regular window under the cursor (desktop, menu bar, Dock, …), gestures don't trigger and events pass through untouched — exactly as if the tool weren't installed.
-To target the focused window instead, set `Config.targetUnderCursor` to `false`.
 
 The UI (menus, settings, tutorial, overlays) follows your system language: English everywhere, Chinese on Chinese-language systems.
 
@@ -54,9 +54,10 @@ your machine; the code is auditable.
 
 ## UI
 
-- **Menu bar icon**: running status, pause gestures, settings, tutorial, launch at login, quit
-- **Settings window**: a live trackpad diagram at the top shows every zone and your current finger position; each gesture can be toggled individually and zone sizes are adjustable
-- **Interactive tutorial**: opens automatically after first authorization — 5 steps (welcome → move → cursor zoom → minimize → close), practiced on the tutorial window itself; each step advances when you perform it correctly. Re-open it any time from the menu bar, or launch with `--reset-onboarding`
+- **Menu bar icon**: left-click pauses/resumes gestures (the icon dims while paused), right-click opens the menu (settings, quit)
+- **Settings window**: a live trackpad diagram at the top shows every zone and your current finger position — **drag the white handles on the diagram to resize zones**; each gesture can be toggled individually, and the switcher direction is configurable
+- **Interactive tutorial**: opens automatically after first authorization — 6 steps (welcome → move → resize → cursor zoom → minimize → close), practiced on the tutorial window itself; each step advances when you perform it correctly, and closing the window with the gesture finishes the tutorial. While the tutorial is open, close/minimize gestures only affect the tutorial window, so your real windows are safe. Re-open it any time from settings, or launch with `--reset-onboarding`
+- **Launch at login**: enabled by default on the first run as an .app; turn it off in settings — you can always relaunch from /Applications or Spotlight
 
 ## How it works
 
@@ -88,15 +89,15 @@ Add `--debug` when tuning thresholds — it prints live finger coordinates
 Everything adjustable in the settings window persists to UserDefaults (key `config`).
 Defaults live in `Sources/trackpad_pro/Config.swift`:
 
-- `cornerSize` (default 0.15): height of the top gesture strip; also the width of the top-right (resize) corner
+- `topEdgeHeight` (default 0.10): uniform height of the top gesture strip (close/minimize/move/resize)
 - `closeZoneWidth` (default 0.10): close zone width, flush with the left edge
-- `minimizeZoneWidth` (default 0.15): minimize zone width, immediately right of the close zone (i.e. 10%–25%)
-- `topEdgeHeight` (default 0.10): height of the top-edge window-drag zone
+- `minimizeZoneWidth` (default 0.10): minimize zone width, immediately right of the close zone (i.e. 10%–20%)
+- `cornerSize` (default 0.10): width of the top-right (resize) corner
 - `requireSingleFinger` (default true): only trigger with a single finger on the pad
 - `tapFallbackInterval` (default 0.25s): for tap-to-click, how far back to look up the finger that just lifted
 - `closeCancelDistance` (default 10px): moving beyond this distance after pressing in the close/minimize zone cancels the action
-- `targetUnderCursor` (default true): act on the window under the cursor; false = act on the focused window
 - `cursorZoomEnabled` (default true) / `rightEdgeWidth` (0.06) / `edgeSwipeActivationDistance` (0.04) / `cursorZoomScale` (3.0): right-edge swipe cursor zoom
+- `switcherEnabled` (default true) / `bottomEdgeHeight` (0.12) / `switcherStepDistance` (0.055 — distance per window at slow speed; fast swipes accelerate up to 4×) / `switcherRightToNext` (true — swipe right for the next window): bottom-edge window switcher
 
 ## Packaging as .app
 
@@ -139,9 +140,11 @@ Sources/trackpad_pro/StatusBarController.swift menu bar icon & menu
 Sources/trackpad_pro/TrackpadDiagram.swift  trackpad diagram (shared by settings/tutorial)
 Sources/trackpad_pro/SettingsWindow.swift   settings window
 Sources/trackpad_pro/OnboardingWindow.swift tutorial window & animations
+Sources/trackpad_pro/WindowSwitcher.swift   bottom-edge window switcher + switcher HUD
 Sources/trackpad_pro/GestureEvents.swift    gesture-completed events (tutorial subscribes)
+Sources/trackpad_pro/L10n.swift             bilingual strings (follows system language)
 Sources/trackpad_pro/Config.swift           thresholds
-Sources/trackpad_pro/main.swift             entry point, permissions
+Sources/trackpad_pro/main.swift             entry point, permissions, single-instance lock
 ```
 
 ## License
