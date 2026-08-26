@@ -15,9 +15,9 @@
     <!-- Minimize: next to close -->
     <rect x="104" y="60" width="64" height="40" fill="#f0883e" fill-opacity="0.28" stroke="#f0883e" stroke-width="1.5"/>
     <!-- Move window: top edge -->
-    <rect x="168" y="60" width="408" height="40" fill="#58a6ff" fill-opacity="0.22" stroke="#58a6ff" stroke-width="1.5"/>
+    <rect x="168" y="60" width="448" height="40" fill="#58a6ff" fill-opacity="0.22" stroke="#58a6ff" stroke-width="1.5"/>
     <!-- Resize: top-right corner -->
-    <rect x="576" y="60" width="64" height="40" fill="#3fb950" fill-opacity="0.28" stroke="#3fb950" stroke-width="1.5"/>
+    <rect x="616" y="60" width="64" height="40" fill="#3fb950" fill-opacity="0.28" stroke="#3fb950" stroke-width="1.5"/>
     <!-- Cursor zoom: right edge -->
     <rect x="642" y="100" width="38" height="360" fill="#bc8cff" fill-opacity="0.22" stroke="#bc8cff" stroke-width="1.5"/>
     <!-- Switch windows: bottom edge -->
@@ -27,14 +27,14 @@
   <!-- In-zone symbols (traffic-light mapping) -->
   <text x="72" y="87" text-anchor="middle" font-size="18" font-weight="600" fill="#f85149">×</text>
   <text x="136" y="86" text-anchor="middle" font-size="18" font-weight="700" fill="#f0883e">–</text>
-  <text x="372" y="86" text-anchor="middle" font-size="15" fill="#58a6ff">Hold &amp; drag = move window</text>
+  <text x="392" y="86" text-anchor="middle" font-size="15" fill="#58a6ff">Hold &amp; drag = move window</text>
   <text x="341" y="441" text-anchor="middle" font-size="15" fill="#2bb8b3">Swipe left/right = switch windows (fast swipe accelerates, lift to pick)</text>
 
   <!-- Labels -->
   <text x="72" y="46" text-anchor="middle" font-size="15" fill="#f85149">Press = close</text>
   <text x="192" y="24" text-anchor="middle" font-size="15" fill="#f0883e">Press = minimize</text>
   <line x1="170" y1="30" x2="136" y2="56" stroke="#f0883e" stroke-width="1"/>
-  <text x="608" y="46" text-anchor="middle" font-size="15" fill="#3fb950">Drag = resize</text>
+  <text x="648" y="46" text-anchor="middle" font-size="15" fill="#3fb950">Drag = resize</text>
   <text x="700" y="285" font-size="15" fill="#bc8cff">Swipe in = zoom cursor</text>
   <line x1="696" y1="280" x2="668" y2="280" stroke="#bc8cff" stroke-width="1"/>
 
